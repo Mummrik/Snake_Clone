@@ -3,7 +3,7 @@
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-    public LinkedList<GameObject> linkedList;
+    
 
     public GameObject wallPrefab;
     public GameObject headPrefab;
@@ -14,8 +14,6 @@ public class GameManager : MonoBehaviour
 
     Tile[,] grid;
     Camera mainCamera;
-    int wallPixelXSize;
-    int wallPixelYSize;
     int height;
     int width;
     GameObject fruit;
@@ -29,13 +27,10 @@ public class GameManager : MonoBehaviour
         if (wallPrefab == null) { wallPrefab = Resources.Load("Prefabs/Wall") as GameObject; }
         if (foodPrefab == null) { foodPrefab = Resources.Load("Prefabs/Fruit") as GameObject; }
         if (bodyPrefab == null) { bodyPrefab = Resources.Load("Prefabs/Body") as GameObject; }
-        if (levelScale <= 0){ levelScale = 2; }
+        if (levelScale <= 0) { levelScale = 2; }
         if (snakeSpeed <= 0) { snakeSpeed = 5; }
-        wallPixelXSize = wallPrefab.GetComponent<SpriteRenderer>().sprite.texture.width;
-        wallPixelYSize = wallPrefab.GetComponent<SpriteRenderer>().sprite.texture.height;
 
-        linkedList = new LinkedList<GameObject>();
-        linkedList.addFirst(Instantiate(headPrefab));
+        Instantiate(headPrefab);
         GenerateLevel();
         fruit = Instantiate(foodPrefab);
         SpawnFruit();

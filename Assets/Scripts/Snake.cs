@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Snake : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class Snake : MonoBehaviour
     public float tick;
     int grow;
     Vector3 lastPosition;
+    LinkedList<GameObject> linkedList;
     private void Awake()
     {
         Camera camera = Camera.main;
@@ -20,20 +22,55 @@ public class Snake : MonoBehaviour
         movement = transform.position + Vector3.up * (0.01f * moveSpeed);
         gameObject.name = "Snake";
         moveSpeed = GameManager.instance.snakeSpeed;
+        linkedList = new LinkedList<GameObject>();
+        grow = 3;
     }
     private void Update()
     {
-        if (hitWall) { return; }
+        //if (hitWall) { return; }
+        if (tick > 1 / moveSpeed)
+        {
+            if (hitWall)
+            {
+                SceneManager.LoadScene(0);
+            }
+            else
+            {
+                lastPosition = transform.position;
+                transform.position = movement;
+
+                if (linkedList.count() > 0)
+                {
+                    GameObject temp = linkedList.getLast();
+                    linkedList.remove(linkedList.getLast());
+                    temp.transform.position = lastPosition;
+                    linkedList.addFirst(temp);
+
+                }
+
+                tick = 0;
+                if (grow > 0)
+                {
+                    grow--;
+                    GameObject body = Instantiate(GameManager.instance.bodyPrefab, transform.position, Quaternion.identity);
+                    linkedList.addLast(body);
+                    // add new body to the last element
+                }
+                RotateSnake(snakeDirection);
+            }
+
+        }
+
         if (GameManager.instance.snakeSpeed >= moveSpeed + 1)
         {
             moveSpeed++;
         }
-        if (Input.GetKeyDown(KeyCode.UpArrow)) { RotateSnake(Direction.up); }
-        if (Input.GetKeyDown(KeyCode.DownArrow)) { RotateSnake(Direction.down); }
-        if (Input.GetKeyDown(KeyCode.LeftArrow)) { RotateSnake(Direction.left); }
-        if (Input.GetKeyDown(KeyCode.RightArrow)) { RotateSnake(Direction.right); }
+        if (Input.GetKeyDown(KeyCode.UpArrow)) { snakeDirection = Direction.up; }
+        if (Input.GetKeyDown(KeyCode.DownArrow)) { snakeDirection = Direction.down; }
+        if (Input.GetKeyDown(KeyCode.LeftArrow)) { snakeDirection = Direction.left; }
+        if (Input.GetKeyDown(KeyCode.RightArrow)) { snakeDirection = Direction.right; }
 
-        
+
         switch (snakeDirection)
         {
             case Direction.up:
@@ -52,35 +89,12 @@ public class Snake : MonoBehaviour
                 break;
         }
 
-        if (tick > 1 / moveSpeed)
-        {
-            lastPosition = transform.position;
-            transform.position = movement;
-            GameObject head = GameManager.instance.linkedList.getFirst();
-            GameObject last = GameManager.instance.linkedList.getLast();
-            if (GameManager.instance.linkedList.count() > 1)
-            {
-                last.transform.position = lastPosition;
-                GameManager.instance.linkedList.insertAfter(head, last);
-                GameManager.instance.linkedList.remove(last);
-            }
-            
-            tick = 0;
-            if (grow > 0)
-            {
-                grow--;
-                
-                GameObject body = Instantiate(GameManager.instance.bodyPrefab, GameManager.instance.linkedList.getLast().transform.position, Quaternion.identity);
-                GameManager.instance.linkedList.addLast(body);
-            }
-        }
-        
         tick += Time.fixedDeltaTime;
     }
     private void FixedUpdate()
     {
-        if (hitWall) { return; }
-        
+
+
 
     }
 
@@ -91,7 +105,7 @@ public class Snake : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Wall" /*|| collision.tag == "Body"*/)
+        if (collision.tag == "Wall" || collision.tag == "Body")
         {
             hitWall = true;
         }

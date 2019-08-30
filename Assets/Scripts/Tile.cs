@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Tile : MonoBehaviour
+public class Tile
 {
     public float posX;
     public float posY;
@@ -10,6 +10,6 @@ public class Tile : MonoBehaviour
     {
         posX = x;
         posY = y;
-        isWall = isWall;
+        this.isWall = isWall;
     }
 }

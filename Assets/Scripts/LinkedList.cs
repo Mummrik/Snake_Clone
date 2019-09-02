@@ -1,11 +1,11 @@
 ﻿using System;
 using UnityEngine;
 
-public class LinkedList<Object> /*: Iterator<Object>*/
+public class LinkedList<T> /*: Iterator<Object>*/
 {
 
     // Usefull info https://www.cs.cmu.edu/~adamchik/15-121/lectures/Linked%20Lists/linked%20lists.html
-    private Node<Object> head;
+    private Node<T> head;
 
     public LinkedList()
     {
@@ -13,28 +13,28 @@ public class LinkedList<Object> /*: Iterator<Object>*/
         head = null;
     }
 
-    public void addFirst(Object item)
+    public void addFirst(T item)
     {
         // when adding a new element to the list it should create a new node whit the previous nodes data therefor linking it
-        head = new Node<Object>(item, head);
+        head = new Node<T>(item, head);
     }
 
-    public Object getFirst()
+    public T getFirst()
     {
         // method to get the data of the first element of the list
         if (head == null) { throw new NullReferenceException(); }
         return head.data;
     }
 
-    public Object removeFirst()
+    public T removeFirst()
     {
         // Remove the first element, and then set the head to the next element in the list
-        Object temp = getFirst();
+        T temp = getFirst();
         head = head.next;
         return temp;
     }
 
-    public void addLast(Object item)
+    public void addLast(T item)
     {
         // if the list is empty, add the item as the first element
         if (head == null)
@@ -43,21 +43,21 @@ public class LinkedList<Object> /*: Iterator<Object>*/
         }
         else
         {
-            Node<Object> temp = head;   // create a temporary node that contains the heads data
+            Node<T> temp = head;   // create a temporary node that contains the heads data
             while (temp.next != null)   // iterate through the list untill you reach the last element that is null
             {
                 temp = temp.next;
             }
             // when reaching the last element add the item to the list and set the last element to null
-            temp.next = new Node<Object>(item, null);
+            temp.next = new Node<T>(item, null);
         }
     }
 
-    public Object getLast()
+    public T getLast()
     {
         if (head == null) { throw new NullReferenceException(); }
 
-        Node<Object> temp = head;
+        Node<T> temp = head;
         while (temp.next != null)
         {
             temp = temp.next;
@@ -71,7 +71,7 @@ public class LinkedList<Object> /*: Iterator<Object>*/
         if (head == null) { return 0; }
 
         int count = 1;
-        Node<Object> temp = head;
+        Node<T> temp = head;
         while (temp.next != null)
         {
             temp = temp.next;
@@ -87,9 +87,9 @@ public class LinkedList<Object> /*: Iterator<Object>*/
     }
 
     // Check and see if the list contains an Object
-    public bool contains(Object item)
+    public bool contains(T item)
     {
-        Node<Object> temp = head;
+        Node<T> temp = head;
         do
         {
             if (temp.data.Equals(item))
@@ -102,13 +102,13 @@ public class LinkedList<Object> /*: Iterator<Object>*/
         return false;
     }
 
-    public Object get(int index)
+    public T get(int index)
     {
         if (head == null)
         {
             throw new IndexOutOfRangeException();
         }
-        Node<Object> temp = head;
+        Node<T> temp = head;
         for (int i = 0; i < index; i++)
         {
             temp = temp.next;
@@ -121,9 +121,9 @@ public class LinkedList<Object> /*: Iterator<Object>*/
         return temp.data;
     }
 
-    public void insertAfter(Object key, Object item)
+    public void insertAfter(T key, T item)
     {
-        Node<Object> temp = head;
+        Node<T> temp = head;
         // Iterate untill key is found in the list
         while (temp != null && !temp.data.Equals(key))
         {
@@ -132,11 +132,11 @@ public class LinkedList<Object> /*: Iterator<Object>*/
         // if key is found, we set the next element to the new item, and grab a reference to the next element after the new element
         if (temp != null)
         {
-            temp.next = new Node<Object>(item, temp.next);
+            temp.next = new Node<T>(item, temp.next);
         }
     }
 
-    public void insertBefore(Object key, Object item)
+    public void insertBefore(T key, T item)
     {
         if (head == null) { return; }
 
@@ -145,8 +145,8 @@ public class LinkedList<Object> /*: Iterator<Object>*/
             addFirst(item);
             return;
         }
-        Node<Object> previous = null;
-        Node<Object> current = head;
+        Node<T> previous = null;
+        Node<T> current = head;
 
         while (current != null && !current.data.Equals(key))
         {
@@ -155,11 +155,11 @@ public class LinkedList<Object> /*: Iterator<Object>*/
         }
         if (current != null)
         {
-            previous.next = new Node<Object>(item, current);
+            previous.next = new Node<T>(item, current);
         }
     }
 
-    public void remove(Object key)
+    public void remove(T key)
     {
         if (head == null) { throw new NullReferenceException(); }
         if (head.data.Equals(key))
@@ -167,8 +167,8 @@ public class LinkedList<Object> /*: Iterator<Object>*/
             head = head.next;
             return;
         }
-        Node<Object> previous = null;
-        Node<Object> current = head;
+        Node<T> previous = null;
+        Node<T> current = head;
 
         while (current != null && !current.data.Equals(key))
         {

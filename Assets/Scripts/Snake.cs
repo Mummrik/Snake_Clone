@@ -18,7 +18,7 @@ public class Snake : MonoBehaviour
     private void Awake()
     {
         Camera camera = Camera.main;
-        transform.position = new Vector3(camera.transform.position.x, camera.transform.position.y, transform.position.z);
+        transform.position = new Vector3(camera.transform.position.x - 0.5f, camera.transform.position.y - 0.5f, transform.position.z);
         movement = transform.position + Vector3.up * (0.01f * moveSpeed);
         gameObject.name = "Snake";
         moveSpeed = GameManager.instance.snakeSpeed;

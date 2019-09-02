@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class LinkedList<T> /*: Iterator<Object>*/
+public class LinkedList<T>
 {
 
     // Usefull info https://www.cs.cmu.edu/~adamchik/15-121/lectures/Linked%20Lists/linked%20lists.html
@@ -195,20 +195,5 @@ public class Node<Object>
         this.next = next;
     }
 }
-
-/*
-public interface Iterator<Object>
-{
-    public Iterator<Object> Iterator()
-    {
-        return new LinkedListIterator();
-    }
-}
-
-
-public class LinkedListIterator : Iterator<object>
-{
-
-}*/
 
 

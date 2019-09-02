@@ -6,7 +6,7 @@ public class Tile
     public float posY;
     public bool isWall;
 
-    public Tile(float x, float y, bool isWall = true)
+    public Tile(float x, float y, bool isWall)
     {
         posX = x;
         posY = y;

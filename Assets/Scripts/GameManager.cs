@@ -3,20 +3,19 @@
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-    
 
     public GameObject wallPrefab;
     public GameObject headPrefab;
     public GameObject bodyPrefab;
     public GameObject foodPrefab;
-    public int levelScale;
+    public int levelScale;  // set the scale of the gamearea default = 2
     public float snakeSpeed;
 
-    Tile[,] grid;
+    public Tile[,] grid;
     Camera mainCamera;
     int height;
     int width;
-    GameObject fruit;
+    public GameObject fruit;
 
     private void Awake()
     {
@@ -68,6 +67,7 @@ public class GameManager : MonoBehaviour
 
     public void SpawnFruit()
     {
+        //TODO: Redo the random position and check if there is a snake bodypart at the position
         int rndX = Random.Range(1, width - 1);
         int rndY = Random.Range(1, height - 1);
 

@@ -1,11 +1,23 @@
 ﻿using System;
-using UnityEngine;
 
 public class LinkedList<T>
 {
 
     // Usefull info https://www.cs.cmu.edu/~adamchik/15-121/lectures/Linked%20Lists/linked%20lists.html
     private Node<T> head;
+
+    class Node<T>
+    {
+        // Stores the data of the element in the list, and a reference to the next element in the list that contains its data
+        public T data;
+        public Node<T> next;
+
+        public Node(T data, Node<T> next)
+        {
+            this.data = data;
+            this.next = next;
+        }
+    }
 
     public LinkedList()
     {
@@ -183,17 +195,3 @@ public class LinkedList<T>
     }
 
 }
-public class Node<Object>
-{
-    // Stores the data of the element in the list, and a reference to the next element in the list that contains its data
-    public Object data;
-    public Node<Object> next;
-
-    public Node(Object data, Node<Object> next)
-    {
-        this.data = data;
-        this.next = next;
-    }
-}
-
-

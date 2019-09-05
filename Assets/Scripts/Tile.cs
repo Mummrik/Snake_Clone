@@ -2,14 +2,20 @@
 
 public class Tile
 {
-    public float posX;
-    public float posY;
-    public bool isWall;
+    public int x;
+    public int y;
+    public bool isWalkable;
 
-    public Tile(float x, float y, bool isWall)
+    public Tile parent;
+
+    public int gCost;
+    public int hCost;
+    public int fCost { get => gCost + hCost; }
+
+    public Tile(int x, int y, bool isWall)
     {
-        posX = x;
-        posY = y;
-        this.isWall = isWall;
+        this.x = x;
+        this.y = y;
+        isWalkable = isWall;
     }
 }

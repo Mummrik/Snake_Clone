@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -20,6 +21,7 @@ public class Snake : MonoBehaviour
     // A*
     public bool usePathfinding = true;
     Astar pathfinding;
+    List<Tile> path;
 
     //Using a start instead of awake to make the GameManager setup the game area before we populate it
     private void Start()
@@ -31,16 +33,23 @@ public class Snake : MonoBehaviour
         gameSpeedMultiplier = GameManager.instance.snakeSpeed;
         linkedList = new LinkedList<GameObject>();
         growSnake = 3;   // always start whit 3 body parts
-        if (usePathfinding)
-        {
-            pathfinding = new Astar(GameManager.instance.grid, transform.position, GameManager.instance.fruit.transform.position);
-        }
+        usePathfinding = GameManager.instance.usePathfinding;
     }
     private void Update()
     {
         if (gameOver)
         {
             SceneManager.LoadScene(0);
+        }
+        if (usePathfinding)
+        {
+            if (pathfinding == null)
+            {
+                pathfinding = new Astar();
+            }
+            pathfinding.FindPath(GameManager.instance.grid, transform.position, GameManager.instance.fruit.transform.position);
+            path = pathfinding.path;
+            PathfindSnake();
         }
         if (gameTick > 1 / gameSpeedMultiplier)
         {
@@ -49,8 +58,48 @@ public class Snake : MonoBehaviour
             RotateSnake(snakeDirection);    // set the rotation of the snake head.
         }
 
-        SetSnakeMoveDirection();
+        if (!usePathfinding)
+        {
+            SetSnakeMoveDirection();
+        }
+        
         gameTick += Time.fixedDeltaTime;    // increase the tick timer to manipulate the game speed/ movement speed
+    }
+
+    private void PathfindSnake()
+    {
+        if (path.Count > 0)
+        {
+            if (GameManager.instance.snakeSpeed >= gameSpeedMultiplier + 1) { gameSpeedMultiplier++; }
+            Vector3 current = transform.position;
+            Tile newTile = path[0];
+            path.RemoveAt(0);
+
+            Vector3 getDirection = current - new Vector3(newTile.x, newTile.y);
+            if (getDirection.y == -1 && snakeDirection != Direction.down) { snakeDirection = Direction.up; }
+            if (getDirection.y == 1 && snakeDirection != Direction.up) { snakeDirection = Direction.down; }
+            if (getDirection.x == -1 && snakeDirection != Direction.left) { snakeDirection = Direction.right; }
+            if (getDirection.x == 1 && snakeDirection != Direction.right) { snakeDirection = Direction.left; }
+
+            //set the movement of the snake
+            switch (snakeDirection)
+            {
+                case Direction.up:
+                    snakeMovement = transform.position + Vector3.up;
+                    break;
+                case Direction.down:
+                    snakeMovement = transform.position + Vector3.down;
+                    break;
+                case Direction.left:
+                    snakeMovement = transform.position + Vector3.left;
+                    break;
+                case Direction.right:
+                    snakeMovement = transform.position + Vector3.right;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     private void SetSnakeMoveDirection()
@@ -95,9 +144,10 @@ public class Snake : MonoBehaviour
         {
             // Make the body part follow the head, or its previous node in the linkedList
             GameObject temp = linkedList.getLast(); // get the last element in the linked list in a temp gameobject
-            GameManager.instance.grid[(int)temp.transform.position.x, (int)temp.transform.position.y].isWall = false;    // set the tile to a walkable tile
+            GameManager.instance.grid[(int)temp.transform.position.x, (int)temp.transform.position.y].isWalkable = true;    // set the tile to a walkable tile
             linkedList.remove(linkedList.getLast());    // remove the last element in the list
             temp.transform.position = snakeLastPosition;     // set the position of the temp gameobject to the heads last position
+            GameManager.instance.grid[(int)temp.transform.position.x, (int)temp.transform.position.y].isWalkable = false;    // set the new position tile to a blocking tile
             linkedList.addFirst(temp);                  // put it back in the linked list as the second element in the linked list, behind the head/root element
         }
     }
@@ -109,10 +159,10 @@ public class Snake : MonoBehaviour
         {
             growSnake--; // decrease the grow variable by 1 to make sure it wont spawn more elements than its suposed to
             GameObject body = Instantiate(GameManager.instance.bodyPrefab, snakeLastPosition, Quaternion.identity);  // create the gameobject in the game scene
-            GameManager.instance.grid[(int)body.transform.position.x, (int)body.transform.position.y].isWall = true;    // set the tile to a blocking tile
+            GameManager.instance.grid[(int)body.transform.position.x, (int)body.transform.position.y].isWalkable = false;    // set the tile to a blocking tile
             body.name = "body"; // just rename it, to make it look clean in the hierarcy
             linkedList.addFirst(body);  // add the gameobject to the first element in the linked list,
-            //(Head gameobject is not really inside the linked list it just contain the list, and all the body parts is inside the list. Following the position of the head)
+                                        //(Head gameobject is not really inside the linked list it just contain the list, and all the body parts is inside the list. Following the position of the head)
         }
     }
 

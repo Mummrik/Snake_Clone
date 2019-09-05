@@ -238,6 +238,8 @@ MonoBehaviour:
   foodPrefab: {fileID: 0}
   levelScale: 2
   snakeSpeed: 5
+  usePathfinding: 1
+  fruit: {fileID: 0}
 --- !u!4 &1800479023
 Transform:
   m_ObjectHideFlags: 0

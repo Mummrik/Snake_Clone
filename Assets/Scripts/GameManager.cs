@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public GameObject foodPrefab;
     public int levelScale;  // set the scale of the gamearea default = 2
     public float snakeSpeed;
+    public bool usePathfinding;
 
     public Tile[,] grid;
     Camera mainCamera;
@@ -55,11 +56,11 @@ public class GameManager : MonoBehaviour
                 {
                     GameObject go = Instantiate(wallPrefab, walls.transform);
                     go.transform.position = new Vector3(x, y, 0);
-                    grid[x, y] = new Tile(x, y, true);
+                    grid[x, y] = new Tile(x, y, false);
                 }
                 else
                 {
-                    grid[x, y] = new Tile(x, y, false);
+                    grid[x, y] = new Tile(x, y, true);
                 }
             }
         }
@@ -68,10 +69,18 @@ public class GameManager : MonoBehaviour
     public void SpawnFruit()
     {
         //TODO: Redo the random position and check if there is a snake bodypart at the position
-        int rndX = Random.Range(1, width - 1);
-        int rndY = Random.Range(1, height - 1);
+        while (true)
+        {
+            int rndX = Random.Range(1, width - 1);
+            int rndY = Random.Range(1, height - 1);
 
-        fruit.transform.position = new Vector3(rndX, rndY, 0);
-        fruit.name = "fruit";
+            if (grid[rndX, rndY].isWalkable)
+            {
+                fruit.transform.position = new Vector3(rndX, rndY, 0);
+                fruit.name = "fruit";
+                break;
+            }
+        }
+
     }
 }

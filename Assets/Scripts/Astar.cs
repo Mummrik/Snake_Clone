@@ -8,7 +8,7 @@ public class Astar
     public List<Tile> path;
     bool allowDiagonal = false;
 
-    public void FindPath(Tile[,] grid, Vector2 startPosition, Vector2 endPosition)
+    public bool FindPath(Tile[,] grid, Vector2 startPosition, Vector2 endPosition)
     {
         _grid = grid;
         Tile startTile = grid[(int)startPosition.x, (int)startPosition.y];
@@ -36,7 +36,7 @@ public class Astar
             if (currentTile == endTile)
             {
                 RetracePath(startTile, endTile);
-                return;
+                return true;
             }
 
             foreach (Tile neighbour in GetNeighbours(currentTile))
@@ -60,6 +60,8 @@ public class Astar
                 }
             }
         }
+        Debug.Log("Path not found!");
+        return false;
     }
 
     void RetracePath(Tile start, Tile end)
@@ -93,7 +95,7 @@ public class Astar
 
         if (distX > distY)
         {
-            return distY + 10 * (distX - distY);
+            return distY + 1 * (distX - distY);
         }
 
         return distX + 1 * (distY - distX);

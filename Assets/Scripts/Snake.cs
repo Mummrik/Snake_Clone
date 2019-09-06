@@ -22,6 +22,7 @@ public class Snake : MonoBehaviour
     public bool usePathfinding = true;
     Astar pathfinding;
     List<Tile> path;
+    bool hasPath;
 
     //Using a start instead of awake to make the GameManager setup the game area before we populate it
     private void Start()
@@ -35,24 +36,25 @@ public class Snake : MonoBehaviour
         growSnake = 3;   // always start whit 3 body parts
         usePathfinding = GameManager.instance.usePathfinding;
     }
-    private void Update()
+    private void FixedUpdate()
     {
         if (gameOver)
         {
             SceneManager.LoadScene(0);
+            //return;
         }
-        if (usePathfinding)
-        {
-            if (pathfinding == null)
-            {
-                pathfinding = new Astar();
-            }
-            pathfinding.FindPath(GameManager.instance.grid, transform.position, GameManager.instance.fruit.transform.position);
-            path = pathfinding.path;
-            PathfindSnake();
-        }
+
         if (gameTick > 1 / gameSpeedMultiplier)
         {
+            if (usePathfinding)
+            {
+                if (pathfinding == null)
+                {
+                    pathfinding = new Astar();
+                }
+                hasPath = pathfinding.FindPath(GameManager.instance.grid, transform.position, GameManager.instance.fruit.transform.position);
+                PathfindSnake();
+            }
             MoveSnake();    // move the snake
             GrowSnake();    // after the snake moved grow it
             RotateSnake(snakeDirection);    // set the rotation of the snake head.
@@ -62,18 +64,36 @@ public class Snake : MonoBehaviour
         {
             SetSnakeMoveDirection();
         }
-        
         gameTick += Time.fixedDeltaTime;    // increase the tick timer to manipulate the game speed/ movement speed
+    }
+
+    void OnDrawGizmos()
+    {
+        if (path != null)
+        {
+            foreach (var tile in path)
+            {
+                Gizmos.color = Color.black;
+                if (tile.isWalkable)
+                { Gizmos.color = Color.cyan; }
+                Gizmos.DrawCube(new Vector2(tile.x,tile.y), Vector3.one);
+            }
+        }
     }
 
     private void PathfindSnake()
     {
-        if (path.Count > 0)
+        path = pathfinding.path;
+        if (hasPath && path != null)
         {
+            
             if (GameManager.instance.snakeSpeed >= gameSpeedMultiplier + 1) { gameSpeedMultiplier++; }
             Vector3 current = transform.position;
+            if (path.Count < 1)
+            {
+                Debug.Log("Path is empty");
+            }
             Tile newTile = path[0];
-            path.RemoveAt(0);
 
             Vector3 getDirection = current - new Vector3(newTile.x, newTile.y);
             if (getDirection.y == -1 && snakeDirection != Direction.down) { snakeDirection = Direction.up; }
@@ -139,6 +159,7 @@ public class Snake : MonoBehaviour
         gameTick = 0;
         snakeLastPosition = transform.position;  // store the last position of the snake head
         transform.position = snakeMovement;      // move the snake head to its new position
+        GameManager.instance.grid[(int)transform.position.x, (int)transform.position.y].isWalkable = false;
 
         if (linkedList.count() > 0)
         {

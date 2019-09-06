@@ -40,8 +40,6 @@ public class GameManager : MonoBehaviour
     {
         width = 16 * levelScale + (levelScale * 2);
         height = 9 * levelScale + (levelScale);
-        float cameraPosX = mainCamera.transform.position.x * levelScale;
-        float cameraPosY = mainCamera.transform.position.y * levelScale;
         mainCamera.orthographicSize = mainCamera.orthographicSize * levelScale + (levelScale * 0.1f);
         mainCamera.transform.position = new Vector3(width / 2 - 0.5f, height / 2 - 0.5f, -10);
 

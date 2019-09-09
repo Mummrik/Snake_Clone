@@ -82,6 +82,7 @@ public class Astar
     {
         int distX = Mathf.Abs(a.x - b.x);
         int distY = Mathf.Abs(a.y - b.y);
+        return distY + distX;
 
         if (allowDiagonal)
         {
@@ -99,6 +100,7 @@ public class Astar
         }
 
         return distX + 1 * (distY - distX);
+        
     }
 
     public Vector2 TileToVector2(Tile tile)

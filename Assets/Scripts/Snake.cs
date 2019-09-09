@@ -21,7 +21,6 @@ public class Snake : MonoBehaviour
     // A*
     public bool usePathfinding = true;
     Astar pathfinding;
-    List<Tile> path;
     bool hasPath;
 
     //Using a start instead of awake to make the GameManager setup the game area before we populate it
@@ -36,14 +35,16 @@ public class Snake : MonoBehaviour
         growSnake = 3;   // always start whit 3 body parts
         usePathfinding = GameManager.instance.usePathfinding;
     }
-    private void FixedUpdate()
+    private void Update()
     {
         if (gameOver)
         {
             SceneManager.LoadScene(0);
             //return;
         }
-
+    }
+    private void FixedUpdate()
+    {
         if (gameTick > 1 / gameSpeedMultiplier)
         {
             if (usePathfinding)
@@ -53,7 +54,26 @@ public class Snake : MonoBehaviour
                     pathfinding = new Astar();
                 }
                 hasPath = pathfinding.FindPath(GameManager.instance.grid, transform.position, GameManager.instance.fruit.transform.position);
-                PathfindSnake();
+                if (hasPath)
+                {
+                    PathfindSnake();
+                }
+                else
+                {
+                    snakeDirection = Direction.up;
+                    Tile[,] grid = GameManager.instance.grid;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        if (grid[(int)GetNewHeadPosition().x, (int)GetNewHeadPosition().y].isWalkable)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            snakeDirection++;
+                        }
+                    }
+                }
             }
             MoveSnake();    // move the snake
             GrowSnake();    // after the snake moved grow it
@@ -67,15 +87,33 @@ public class Snake : MonoBehaviour
         gameTick += Time.fixedDeltaTime;    // increase the tick timer to manipulate the game speed/ movement speed
     }
 
+    private Vector3 GetNewHeadPosition()
+    {
+        //set the movement of the snake
+        switch (snakeDirection)
+        {
+            case Direction.up:
+                return transform.position + Vector3.up;
+            case Direction.down:
+                return transform.position + Vector3.down;
+            case Direction.left:
+                return transform.position + Vector3.left;
+            case Direction.right:
+                return transform.position + Vector3.right;
+            default:
+                return Vector3.zero;
+        }
+    }
+
     void OnDrawGizmos()
     {
-        if (path != null)
+        if (pathfinding?.path != null)
         {
-            foreach (var tile in path)
+            foreach (var tile in pathfinding.path)
             {
-                Gizmos.color = Color.black;
+                //Gizmos.color = Color.black;
                 if (tile.isWalkable)
-                { Gizmos.color = Color.cyan; }
+                { Gizmos.color = Color.white; }
                 Gizmos.DrawCube(new Vector2(tile.x,tile.y), Vector3.one);
             }
         }
@@ -83,43 +121,18 @@ public class Snake : MonoBehaviour
 
     private void PathfindSnake()
     {
-        path = pathfinding.path;
-        if (hasPath && path != null)
+        if (GameManager.instance.snakeSpeed >= gameSpeedMultiplier + 1) { gameSpeedMultiplier++; }
+        Vector3 current = transform.position;
+        if (pathfinding?.path != null)
         {
-            
-            if (GameManager.instance.snakeSpeed >= gameSpeedMultiplier + 1) { gameSpeedMultiplier++; }
-            Vector3 current = transform.position;
-            if (path.Count < 1)
-            {
-                Debug.Log("Path is empty");
-            }
-            Tile newTile = path[0];
-
+            Tile newTile = pathfinding.path[0];
             Vector3 getDirection = current - new Vector3(newTile.x, newTile.y);
             if (getDirection.y == -1 && snakeDirection != Direction.down) { snakeDirection = Direction.up; }
             if (getDirection.y == 1 && snakeDirection != Direction.up) { snakeDirection = Direction.down; }
             if (getDirection.x == -1 && snakeDirection != Direction.left) { snakeDirection = Direction.right; }
             if (getDirection.x == 1 && snakeDirection != Direction.right) { snakeDirection = Direction.left; }
-
-            //set the movement of the snake
-            switch (snakeDirection)
-            {
-                case Direction.up:
-                    snakeMovement = transform.position + Vector3.up;
-                    break;
-                case Direction.down:
-                    snakeMovement = transform.position + Vector3.down;
-                    break;
-                case Direction.left:
-                    snakeMovement = transform.position + Vector3.left;
-                    break;
-                case Direction.right:
-                    snakeMovement = transform.position + Vector3.right;
-                    break;
-                default:
-                    break;
-            }
         }
+        
     }
 
     private void SetSnakeMoveDirection()
@@ -132,31 +145,14 @@ public class Snake : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.DownArrow) && snakeDirection != Direction.up) { snakeDirection = Direction.down; }
         if (Input.GetKeyDown(KeyCode.LeftArrow) && snakeDirection != Direction.right) { snakeDirection = Direction.left; }
         if (Input.GetKeyDown(KeyCode.RightArrow) && snakeDirection != Direction.left) { snakeDirection = Direction.right; }
-
-        //set the movement of the snake
-        switch (snakeDirection)
-        {
-            case Direction.up:
-                snakeMovement = transform.position + Vector3.up;
-                break;
-            case Direction.down:
-                snakeMovement = transform.position + Vector3.down;
-                break;
-            case Direction.left:
-                snakeMovement = transform.position + Vector3.left;
-                break;
-            case Direction.right:
-                snakeMovement = transform.position + Vector3.right;
-                break;
-            default:
-                break;
-        }
     }
 
     private void MoveSnake()
     {
         // move the snake
         gameTick = 0;
+
+        snakeMovement = GetNewHeadPosition();
         snakeLastPosition = transform.position;  // store the last position of the snake head
         transform.position = snakeMovement;      // move the snake head to its new position
         GameManager.instance.grid[(int)transform.position.x, (int)transform.position.y].isWalkable = false;

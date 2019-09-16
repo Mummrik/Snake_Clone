@@ -410,7 +410,7 @@ MonoBehaviour:
   appleCounter: {fileID: 0}
   appleCount: 0
   levelScale: 3
-  snakeSpeed: 10
+  snakeSpeed: 55
   usePathfinding: 1
   fruit: {fileID: 0}
 --- !u!4 &1800479023

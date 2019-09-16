@@ -60,7 +60,6 @@ public class Astar
                 }
             }
         }
-        Debug.Log("Path not found!");
         return false;
     }
 

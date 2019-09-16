@@ -35,16 +35,14 @@ public class Snake : MonoBehaviour
         growSnake = 3;   // always start whit 3 body parts
         usePathfinding = GameManager.instance.usePathfinding;
     }
-    private void Update()
+    private void FixedUpdate()
     {
         if (gameOver)
         {
             SceneManager.LoadScene(0);
             //return;
         }
-    }
-    private void FixedUpdate()
-    {
+
         if (gameTick > 1 / gameSpeedMultiplier)
         {
             if (usePathfinding)
@@ -60,17 +58,27 @@ public class Snake : MonoBehaviour
                 }
                 else
                 {
-                    snakeDirection = Direction.up;
-                    Tile[,] grid = GameManager.instance.grid;
-                    for (int i = 0; i < 3; i++)
+                    bool tailPath = false;
+                    //GameManager.instance.grid[(int)linkedList.getLast().transform.position.x, (int)linkedList.getLast().transform.position.y].isWalkable = true;
+                    //tailPath = pathfinding.FindPath(GameManager.instance.grid, transform.position, linkedList.getLast().transform.position);
+                    if (tailPath)
                     {
-                        if (grid[(int)GetNewHeadPosition().x, (int)GetNewHeadPosition().y].isWalkable)
+                        PathfindSnake();
+                    }
+                    else
+                    {
+                        snakeDirection = Direction.up;
+                        Tile[,] grid = GameManager.instance.grid;
+                        for (int i = 0; i < 3; i++)
                         {
-                            break;
-                        }
-                        else
-                        {
-                            snakeDirection++;
+                            if (grid[(int)GetNewHeadPosition().x, (int)GetNewHeadPosition().y].isWalkable)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                snakeDirection++;
+                            }
                         }
                     }
                 }
@@ -107,6 +115,15 @@ public class Snake : MonoBehaviour
 
     void OnDrawGizmos()
     {
+        foreach (var tile in GameManager.instance.grid)
+        {
+            if (!tile.isWalkable)
+            { Gizmos.color = Color.red; }
+            else { Gizmos.color = Color.green; }
+
+            Gizmos.DrawCube(new Vector2(tile.x, tile.y), Vector3.one);
+        }
+
         if (pathfinding?.path != null)
         {
             foreach (var tile in pathfinding.path)
@@ -114,7 +131,7 @@ public class Snake : MonoBehaviour
                 //Gizmos.color = Color.black;
                 if (tile.isWalkable)
                 { Gizmos.color = Color.white; }
-                Gizmos.DrawCube(new Vector2(tile.x,tile.y), Vector3.one);
+                Gizmos.DrawCube(new Vector2(tile.x, tile.y), Vector3.one);
             }
         }
     }
@@ -123,7 +140,7 @@ public class Snake : MonoBehaviour
     {
         if (GameManager.instance.snakeSpeed >= gameSpeedMultiplier + 1) { gameSpeedMultiplier++; }
         Vector3 current = transform.position;
-        if (pathfinding?.path != null)
+        if (pathfinding.path.Count > 0/*pathfinding?.path != null*/)
         {
             Tile newTile = pathfinding.path[0];
             Vector3 getDirection = current - new Vector3(newTile.x, newTile.y);
@@ -132,7 +149,7 @@ public class Snake : MonoBehaviour
             if (getDirection.x == -1 && snakeDirection != Direction.left) { snakeDirection = Direction.right; }
             if (getDirection.x == 1 && snakeDirection != Direction.right) { snakeDirection = Direction.left; }
         }
-        
+
     }
 
     private void SetSnakeMoveDirection()
@@ -155,7 +172,9 @@ public class Snake : MonoBehaviour
         snakeMovement = GetNewHeadPosition();
         snakeLastPosition = transform.position;  // store the last position of the snake head
         transform.position = snakeMovement;      // move the snake head to its new position
-        GameManager.instance.grid[(int)transform.position.x, (int)transform.position.y].isWalkable = false;
+        Tile tile = GameManager.instance.grid[(int)transform.position.x, (int)transform.position.y];
+        if (tile != null) { tile.isWalkable = false; }
+
 
         if (linkedList.count() > 0)
         {

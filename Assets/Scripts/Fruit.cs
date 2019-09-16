@@ -6,5 +6,6 @@ public class Fruit : MonoBehaviour
     {
         GameManager.instance.snakeSpeed += 0.1f;
         GameManager.instance.SpawnFruit();
+        GameManager.instance.appleCount++;
     }
 }

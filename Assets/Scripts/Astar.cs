@@ -82,7 +82,8 @@ public class Astar
     {
         int distX = Mathf.Abs(a.x - b.x);
         int distY = Mathf.Abs(a.y - b.y);
-        return distY + distX;
+
+        return distY + distX; // use this if you want to use the manhattan method
 
         if (allowDiagonal)
         {

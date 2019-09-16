@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class GameManager : MonoBehaviour
     public GameObject headPrefab;
     public GameObject bodyPrefab;
     public GameObject foodPrefab;
+    public Text appleCounter;
+    public int appleCount;
     public int levelScale;  // set the scale of the gamearea default = 2
     public float snakeSpeed;
     public bool usePathfinding;
@@ -27,6 +30,7 @@ public class GameManager : MonoBehaviour
         if (wallPrefab == null) { wallPrefab = Resources.Load("Prefabs/Wall") as GameObject; }
         if (foodPrefab == null) { foodPrefab = Resources.Load("Prefabs/Fruit") as GameObject; }
         if (bodyPrefab == null) { bodyPrefab = Resources.Load("Prefabs/Body") as GameObject; }
+        if (appleCounter == null) { appleCounter = GameObject.Find("appleCounter").GetComponent<Text>(); }
         if (levelScale <= 0) { levelScale = 2; }
         if (snakeSpeed <= 0) { snakeSpeed = 5; }
 
@@ -79,6 +83,9 @@ public class GameManager : MonoBehaviour
                 break;
             }
         }
-
+    }
+    private void LateUpdate()
+    {
+        appleCounter.text = appleCount.ToString();
     }
 }

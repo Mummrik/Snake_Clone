@@ -407,12 +407,12 @@ MonoBehaviour:
   headPrefab: {fileID: 0}
   bodyPrefab: {fileID: 0}
   foodPrefab: {fileID: 0}
+  fruit: {fileID: 0}
   appleCounter: {fileID: 0}
   appleCount: 0
   levelScale: 3
-  snakeSpeed: 55
+  snakeSpeed: 10
   usePathfinding: 1
-  fruit: {fileID: 0}
 --- !u!4 &1800479023
 Transform:
   m_ObjectHideFlags: 0

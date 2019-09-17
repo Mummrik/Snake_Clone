@@ -21,37 +21,35 @@ public class LinkedList<T>
 
     public LinkedList()
     {
-        // When creating a new instance of a Linked list it should be empty aka null
+        // When creating a new instance of a Linked list it should be empty aka null. even though it will always be null, but just to make it clear
         head = null;
     }
 
-    public void addFirst(T item)
+    public void AddFirst(T item)
     {
-        // when adding a new element to the list it should create a new node whit the previous nodes data therefor linking it
+        // when adding a new element to the list it should create a new node whit the previous nodes data as the next element therefore linking it
         head = new Node<T>(item, head);
     }
 
-    public T getFirst()
+    public T GetFirst()
     {
         // method to get the data of the first element of the list
         if (head == null) { throw new NullReferenceException(); }
         return head.data;
     }
 
-    public T removeFirst()
+    public void RemoveFirst()
     {
         // Remove the first element, and then set the head to the next element in the list
-        T temp = getFirst();
         head = head.next;
-        return temp;
     }
 
-    public void addLast(T item)
+    public void AddLast(T item)
     {
         // if the list is empty, add the item as the first element
         if (head == null)
         {
-            addFirst(item);
+            AddFirst(item);
         }
         else
         {
@@ -65,75 +63,72 @@ public class LinkedList<T>
         }
     }
 
-    public T getLast()
+    public T GetLast()
     {
         if (head == null) { throw new NullReferenceException(); }
 
         Node<T> temp = head;
-        while (temp.next != null)
+        while (temp.next != null)   // iterate through the list untill you reach the last element that is null
         {
             temp = temp.next;
         }
-
+        // then return the data of the last node
         return temp.data;
     }
 
-    public int count()
+    public int Count()
     {
+        // if the head is null just return 0 
         if (head == null) { return 0; }
 
-        int count = 1;
+        int count = 1;  // start at 1 since the list atleast contains 1 element
         Node<T> temp = head;
-        while (temp.next != null)
+        while (temp.next != null)   // iterate through the list and increas the count by 1 untill you reach the last element that is null
         {
             temp = temp.next;
             count++;
         }
-
+        // return the count
         return count;
     }
 
-    public void clear()
+    public void Clear()
     {
+        // clear the list, by setting the first element to null all the other elements will lose its reference
         head = null;
     }
 
     // Check and see if the list contains an Object
-    public bool contains(T item)
+    public bool Contains(T item)
     {
+        // start whit the head
         Node<T> temp = head;
         do
         {
-            if (temp.data.Equals(item))
+            if (temp.data.Equals(item)) // if the temp node's data is the same as the item you try to compare then return true
             {
                 return true;
             }
             temp = temp.next;
-        } while (!temp.data.Equals(item));
+        } while (!temp.data.Equals(item));  // do this while the temp nodes data dont match the item you want to compare
 
-        return false;
+        return false;   // if nothing was found just return false
     }
 
-    public T get(int index)
+    public T Get(int index)
     {
-        if (head == null)
-        {
-            throw new IndexOutOfRangeException();
-        }
+        if (head == null || index > Count()) { throw new IndexOutOfRangeException(); }
+
         Node<T> temp = head;
-        for (int i = 0; i < index; i++)
+        for (int i = 0; i < index; i++) // iterate through the list untill the index is reached
         {
             temp = temp.next;
         }
-        if (temp == null)
-        {
-            throw new IndexOutOfRangeException();
-        }
-
+        // return the data of the node
         return temp.data;
     }
 
-    public void insertAfter(T key, T item)
+    public void InsertAfter(T key, T item)
     {
         Node<T> temp = head;
         // Iterate untill key is found in the list
@@ -148,13 +143,18 @@ public class LinkedList<T>
         }
     }
 
-    public void insertBefore(T key, T item)
+    public void InsertBefore(T key, T item)
     {
-        if (head == null) { return; }
+        // if there is nothing in the list then add the item as the first element
+        if (head == null)
+        {
+            AddFirst(item);
+            return;
+        }   
 
         if (head.data.Equals(key))
         {
-            addFirst(item);
+            AddFirst(item);
             return;
         }
         Node<T> previous = null;
@@ -171,7 +171,7 @@ public class LinkedList<T>
         }
     }
 
-    public void remove(T key)
+    public void Remove(T key)
     {
         if (head == null) { throw new NullReferenceException(); }
         if (head.data.Equals(key))

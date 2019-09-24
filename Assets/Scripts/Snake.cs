@@ -6,7 +6,6 @@ public class Snake : MonoBehaviour
     //Public variables
     public enum Direction { Up, Left, Down, Right }
     public Direction snakeDirection;
-    public bool gameOver;
     public float gameTick;
     public float gameSpeedMultiplier;
 
@@ -48,12 +47,6 @@ public class Snake : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (gameOver)
-        {
-            // if the game is over just reload the scene
-            SceneManager.LoadScene(0);
-        }
-
         // make sure the game has a speed limit so it wont run to fast
         if (gameTick > 1 / gameSpeedMultiplier)
         {
@@ -233,7 +226,7 @@ public class Snake : MonoBehaviour
         if (collision.tag == "Wall" || collision.tag == "Body")
         {
             // if a wall or a body part is hit by the head set the game to gameover and restart the scene
-            gameOver = true;
+            SceneManager.LoadScene(0);
         }
         if (collision.tag == "Fruit")
         {

@@ -86,7 +86,7 @@ public class GameManager : MonoBehaviour
                     grid[x, y] = new Tile(x, y, false);
                 }
                 else
-                {   // else the tile will be walkable
+                {   // else the tile is walkable
                     grid[x, y] = new Tile(x, y, true);
                 }
             }

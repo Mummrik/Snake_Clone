@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class Snake : MonoBehaviour
 {
     //Public variables
-    public enum Direction { up, left, down, right }
+    public enum Direction { Up, Left, Down, Right }
     public Direction snakeDirection;
     public bool gameOver;
     public float gameTick;
@@ -17,6 +15,7 @@ public class Snake : MonoBehaviour
     int growSnake;
     Vector3 snakeLastPosition;
     LinkedList<GameObject> linkedList;
+    GameObject snakeBody;
 
     // A*
     public bool usePathfinding = true;
@@ -30,10 +29,12 @@ public class Snake : MonoBehaviour
         transform.position = new Vector3(camera.transform.position.x - 0.5f, camera.transform.position.y - 0.5f, transform.position.z);
         snakeMovement = transform.position + Vector3.up * (0.01f * gameSpeedMultiplier);
         gameObject.name = "Snake";
+        snakeBody = new GameObject("Body");
         gameSpeedMultiplier = GameManager.instance.snakeSpeed;
         linkedList = new LinkedList<GameObject>();
         growSnake = 3;   // always start whit 3 body parts
         usePathfinding = GameManager.instance.usePathfinding;
+        
     }
 
     private void Update()
@@ -51,7 +52,6 @@ public class Snake : MonoBehaviour
         {
             // if the game is over just reload the scene
             SceneManager.LoadScene(0);
-            //return;
         }
 
         // make sure the game has a speed limit so it wont run to fast
@@ -89,7 +89,7 @@ public class Snake : MonoBehaviour
                     else
                     {
                         // try to find the first walkable tile if there is no path to the fruit or tail
-                        snakeDirection = Direction.up;  // firt we set the move direction to up
+                        snakeDirection = Direction.Up;  // firt we set the move direction to up
                         Tile[,] grid = GameManager.instance.grid;   // get a grid to compare if the tiles are walkable or not
                         //check if the direction is walkable else it will try the next direction
                         for (int i = 0; i < 3; i++)
@@ -108,8 +108,8 @@ public class Snake : MonoBehaviour
                     }
                 }
             }
-            MoveSnake();    // move the snake
-            GrowSnake();    // after the snake moved try to grow it
+            MoveSnake();
+            GrowSnake();
             RotateSnake(snakeDirection);    // set the rotation of the snake head. Mainly for the graphic of the head
         }
 
@@ -121,13 +121,13 @@ public class Snake : MonoBehaviour
         //set the movement of the snake, whit the use of snake direction
         switch (snakeDirection)
         {
-            case Direction.up:
+            case Direction.Up:
                 return transform.position + Vector3.up;
-            case Direction.down:
+            case Direction.Down:
                 return transform.position + Vector3.down;
-            case Direction.left:
+            case Direction.Left:
                 return transform.position + Vector3.left;
-            case Direction.right:
+            case Direction.Right:
                 return transform.position + Vector3.right;
             default:
                 return Vector3.zero;
@@ -171,10 +171,10 @@ public class Snake : MonoBehaviour
             Tile newTile = pathfinding.path[0];
             // get the new direction, and then check what direction the snake should take depending on the value
             Vector3 getDirection = transform.position - new Vector3(newTile.x, newTile.y);
-            if (getDirection.y == -1 && snakeDirection != Direction.down) { snakeDirection = Direction.up; }
-            if (getDirection.y == 1 && snakeDirection != Direction.up) { snakeDirection = Direction.down; }
-            if (getDirection.x == -1 && snakeDirection != Direction.left) { snakeDirection = Direction.right; }
-            if (getDirection.x == 1 && snakeDirection != Direction.right) { snakeDirection = Direction.left; }
+            if (getDirection.y == -1 && snakeDirection != Direction.Down) { snakeDirection = Direction.Up; }
+            if (getDirection.y == 1 && snakeDirection != Direction.Up) { snakeDirection = Direction.Down; }
+            if (getDirection.x == -1 && snakeDirection != Direction.Left) { snakeDirection = Direction.Right; }
+            if (getDirection.x == 1 && snakeDirection != Direction.Right) { snakeDirection = Direction.Left; }
         }
     }
 
@@ -184,10 +184,10 @@ public class Snake : MonoBehaviour
         if (GameManager.instance.snakeSpeed >= gameSpeedMultiplier + 1) { gameSpeedMultiplier++; }
 
         // input to change the direction of the snake, but also make sure you cant go the opposite direction
-        if (Input.GetKeyDown(KeyCode.UpArrow) && snakeDirection != Direction.down) { snakeDirection = Direction.up; }
-        if (Input.GetKeyDown(KeyCode.DownArrow) && snakeDirection != Direction.up) { snakeDirection = Direction.down; }
-        if (Input.GetKeyDown(KeyCode.LeftArrow) && snakeDirection != Direction.right) { snakeDirection = Direction.left; }
-        if (Input.GetKeyDown(KeyCode.RightArrow) && snakeDirection != Direction.left) { snakeDirection = Direction.right; }
+        if (Input.GetKeyDown(KeyCode.UpArrow) && snakeDirection != Direction.Down) { snakeDirection = Direction.Up; }
+        if (Input.GetKeyDown(KeyCode.DownArrow) && snakeDirection != Direction.Up) { snakeDirection = Direction.Down; }
+        if (Input.GetKeyDown(KeyCode.LeftArrow) && snakeDirection != Direction.Right) { snakeDirection = Direction.Left; }
+        if (Input.GetKeyDown(KeyCode.RightArrow) && snakeDirection != Direction.Left) { snakeDirection = Direction.Right; }
     }
 
     private void MoveSnake()
@@ -217,7 +217,7 @@ public class Snake : MonoBehaviour
         if (growSnake > 0)
         {
             growSnake--; // decrease the grow variable by 1 to make sure it wont spawn more elements than its suposed to
-            GameObject body = Instantiate(GameManager.instance.bodyPrefab, snakeLastPosition, Quaternion.identity);  // create the gameobject in the game scene
+            GameObject body = Instantiate(GameManager.instance.bodyPrefab, snakeLastPosition, Quaternion.identity, snakeBody.transform);  // create the gameobject in the game scene
             body.name = "body"; // just rename it, to make it look clean in the hierarcy
             linkedList.AddFirst(body);  // add the gameobject to the first element in the linked list,
         }

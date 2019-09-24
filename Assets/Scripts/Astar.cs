@@ -7,6 +7,7 @@ public class Astar
     Tile[,] _grid;
     public List<Tile> path;
     bool allowDiagonal = false;
+    bool useManhattan = true;
 
     public bool FindPath(Tile[,] grid, Vector2 startPosition, Vector2 endPosition)
     {
@@ -82,30 +83,29 @@ public class Astar
         int distX = Mathf.Abs(a.x - b.x);
         int distY = Mathf.Abs(a.y - b.y);
 
-        return distY + distX; // use this if you want to use the manhattan method
-
-        if (allowDiagonal)
+        if (useManhattan)
         {
-            if (distX > distY)
+            return distY + distX;
+        }
+        else
+        {
+            if (allowDiagonal)
             {
-                return 14 * distY + 10 * (distX - distY);
+                if (distX > distY)
+                {
+                    return 14 * distY + 10 * (distX - distY);
+                }
+
+                return 14 * distX + 10 * (distY - distX);
             }
 
-            return 14 * distX + 10 * (distY - distX);
+            if (distX > distY)
+            {
+                return distY + 1 * (distX - distY);
+            }
+
+            return distX + 1 * (distY - distX);
         }
-
-        if (distX > distY)
-        {
-            return distY + 1 * (distX - distY);
-        }
-
-        return distX + 1 * (distY - distX);
-        
-    }
-
-    public Vector2 TileToVector2(Tile tile)
-    {
-        return new Vector2(tile.x, tile.y);
     }
 
     public List<Tile> GetNeighbours(Tile tile)
@@ -137,7 +137,6 @@ public class Astar
                 if (checkX >= 0 && checkX < _grid.GetLength(0) && checkY >= 0 && checkY < _grid.GetLength(1))
                 {
                     neighbours.Add(_grid[checkX, checkY]);
-                    //_grid[checkX, checkY].tile_go.GetComponent<SpriteRenderer>().color = Color.yellow;
                 }
             }
         }

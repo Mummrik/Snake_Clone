@@ -6,16 +6,19 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
+    [Header("Prefabs")]
     public GameObject wallPrefab;
     public GameObject headPrefab;
     public GameObject bodyPrefab;
     public GameObject foodPrefab;
-    public GameObject fruit;
     public Text appleCounter;
-    public int appleCount;
-    public int levelScale;  // set the scale of the gamearea default = 2
+    [HideInInspector] public int appleCount;
+    [HideInInspector] public GameObject fruit;
+
+    [Header("Multipliers")]
+    public int levelScale;
     public float snakeSpeed;
-    public bool usePathfinding;
+    [HideInInspector] public bool usePathfinding;
 
     public Tile[,] grid;
     Camera mainCamera;
@@ -29,25 +32,37 @@ public class GameManager : MonoBehaviour
         // If no prefab is set in editor try to load the default. If there is no default the assertion will print a error.
         if (headPrefab == null) { headPrefab = Resources.Load("Prefabs/Head") as GameObject; }
         Assert.IsNotNull(headPrefab, @"headPrefab is null, didn't find the prefab at path 'Prefabs/Head'.");
+
         if (wallPrefab == null) { wallPrefab = Resources.Load("Prefabs/Wall") as GameObject; }
         Assert.IsNotNull(wallPrefab, @"wallPrefab is null, didn't find the prefab at path 'Prefabs/Wall'.");
+
         if (foodPrefab == null) { foodPrefab = Resources.Load("Prefabs/Fruit") as GameObject; }
         Assert.IsNotNull(foodPrefab, @"foodPrefab is null, didn't find the prefab at path 'Prefabs/Fruit'.");
+
         if (bodyPrefab == null) { bodyPrefab = Resources.Load("Prefabs/Body") as GameObject; }
         Assert.IsNotNull(bodyPrefab, @"bodyPrefab is null, didn't find the prefab at path 'Prefabs/Body'.");
+
         if (appleCounter == null) { appleCounter = GameObject.Find("appleCounter").GetComponent<Text>(); }
         Assert.IsNotNull(appleCounter, @"appleCounter is null, couldn't find the Text component.");
 
         if (levelScale <= 0) { levelScale = 2; }    // assign a default value if there is none set in the editor
-        if (snakeSpeed <= 0) { snakeSpeed = 5; }    // assign a default value if there is none set in the editor
+        if (snakeSpeed <= 0) { snakeSpeed = 10; }    // assign a default value if there is none set in the editor
+    }
 
+    public void StartGame(bool useAStar = false)
+    {
+        usePathfinding = useAStar;
         Instantiate(headPrefab);            // instantiate the snake gameobject
         GenerateLevel();                    // generate a new level
         fruit = Instantiate(foodPrefab);    // set the fruit gameobject to the food prefab object, maybe i should just use the foodprefab object instead?
         fruit.name = "fruit";               // just set the name of the object to get rid of the (clone) thing in the hierarchy
         SpawnFruit();                       // just set a random position for the fruit instead of position (0,0)
+        GameObject.Find("Canvas/Menu").SetActive(false);
     }
-
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
     private void GenerateLevel()
     {
         width = 16 * levelScale + (levelScale * 2); // set the width of the game level, and use a scale to make a larger level
@@ -93,6 +108,6 @@ public class GameManager : MonoBehaviour
         } while (!grid[x, y].isWalkable);
 
         fruit.transform.position = new Vector3(x, y, 0);    // set the new position of the fruit
-        appleCounter.text = appleCount.ToString();  // Update the score in game
+        appleCounter.text = $"Score: {appleCount.ToString()}";  // Update the score in game
     }
 }

@@ -152,6 +152,7 @@ public class LinkedList<T>
             return;
         }   
 
+        // if the first element in the list are the key you looking for then add the new item infront of it
         if (head.data.Equals(key))
         {
             AddFirst(item);
@@ -160,6 +161,7 @@ public class LinkedList<T>
         Node<T> previous = null;
         Node<T> current = head;
 
+        // iterate through the list untill you find the key in the list
         while (current != null && !current.data.Equals(key))
         {
             previous = current;
@@ -167,13 +169,16 @@ public class LinkedList<T>
         }
         if (current != null)
         {
+            // assign the item on the correct position
             previous.next = new Node<T>(item, current);
         }
     }
 
     public void Remove(T key)
     {
+        // if the list is empty throw an error
         if (head == null) { throw new NullReferenceException(); }
+        // set the head to the next element in the list
         if (head.data.Equals(key))
         {
             head = head.next;
@@ -182,6 +187,7 @@ public class LinkedList<T>
         Node<T> previous = null;
         Node<T> current = head;
 
+        //iterate through the list untill the key is found
         while (current != null && !current.data.Equals(key))
         {
             previous = current;
@@ -190,7 +196,7 @@ public class LinkedList<T>
 
         if (current == null) { throw new NullReferenceException(); }
 
-        // Delete the current node from the list
+        // Delete the current node from the list, by setting the previous node.next to the current node.next
         previous.next = current.next;
     }
 

@@ -225,7 +225,7 @@ public class Snake : MonoBehaviour
     {
         if (collision.tag == "Wall" || collision.tag == "Body")
         {
-            // if a wall or a body part is hit by the head set the game to gameover and restart the scene
+            // If the head collide whit the body or a wall the game is over and the scene will just reload
             SceneManager.LoadScene(0);
         }
         if (collision.tag == "Fruit")
